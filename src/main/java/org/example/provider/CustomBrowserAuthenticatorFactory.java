@@ -12,14 +12,26 @@ import org.keycloak.provider.ProviderConfigProperty;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Factory class for CustomBrowserAuthenticator.
+ *
+ * Registers the provider under the ID `branch-form-authenticator`.
+ */
 public class CustomBrowserAuthenticatorFactory implements AuthenticatorFactory {
-    private static final Logger logger = Logger.getLogger(CustomBrowserAuthenticatorFactory.class);
+
     public static final String PROVIDER_ID = "branch-form-authenticator";
-    private static final CustomUsernamePasswordBranchForm INSTANCE = new CustomUsernamePasswordBranchForm();
+
+    private static final Logger logger = Logger.getLogger(CustomBrowserAuthenticatorFactory.class);
+    private static final CustomBrowserAuthenticator SINGLETON = new CustomBrowserAuthenticator();
+
+    private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
+            AuthenticationExecutionModel.Requirement.REQUIRED,
+            AuthenticationExecutionModel.Requirement.DISABLED
+    };
 
     @Override
     public String getDisplayType() {
-        return "Username/Password + Branch";
+        return "Username Password Branch Form";
     }
 
     @Override
@@ -34,10 +46,7 @@ public class CustomBrowserAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return new AuthenticationExecutionModel.Requirement[]{
-                AuthenticationExecutionModel.Requirement.REQUIRED,
-                AuthenticationExecutionModel.Requirement.DISABLED
-        };
+        return REQUIREMENT_CHOICES;
     }
 
     @Override
@@ -47,33 +56,33 @@ public class CustomBrowserAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public String getHelpText() {
-        return "Validates branch field alongside username/password in browser login.";
+        return "Custom authenticator that includes a branch field in the login form.";
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return Collections.emptyList();
+        return Collections.emptyList(); // Could be extended later
     }
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        logger.info("Creating new instance of CustomBrowserAuthenticator");
-        return INSTANCE;
+        logger.debug("Creating instance of CustomBrowserAuthenticator");
+        return SINGLETON;
     }
 
     @Override
     public void init(Config.Scope config) {
-        logger.info("Initializing CustomBrowserBranchAuthenticatorFactory");
+        logger.debug("Initializing CustomBrowserAuthenticatorFactory");
     }
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
-        logger.info("Post-initialization of CustomBrowserBranchAuthenticatorFactory");
+        logger.debug("Post-init CustomBrowserAuthenticatorFactory");
     }
 
     @Override
     public void close() {
-        logger.info("Closing CustomBrowserBranchAuthenticatorFactory");
+        logger.debug("Closing CustomBrowserAuthenticatorFactory");
     }
 
     @Override
