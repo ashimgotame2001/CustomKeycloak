@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Factory class for CustomBrowserAuthenticator.
+ * Factory class for CustomBrowserAuthenticatorWithBranch.
  *
  * Registers the provider under the ID `branch-form-authenticator`.
  */
@@ -22,7 +22,7 @@ public class CustomBrowserAuthenticatorFactory implements AuthenticatorFactory {
     public static final String PROVIDER_ID = "branch-form-authenticator";
 
     private static final Logger logger = Logger.getLogger(CustomBrowserAuthenticatorFactory.class);
-    private static final CustomBrowserAuthenticator SINGLETON = new CustomBrowserAuthenticator();
+    private static final CustomBrowserAuthenticatorWithBranch SINGLETON = new CustomBrowserAuthenticatorWithBranch();
 
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
             AuthenticationExecutionModel.Requirement.REQUIRED,
@@ -66,7 +66,7 @@ public class CustomBrowserAuthenticatorFactory implements AuthenticatorFactory {
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        logger.debug("Creating instance of CustomBrowserAuthenticator");
+        logger.debug("Creating instance of CustomBrowserAuthenticatorWithBranch");
         return SINGLETON;
     }
 

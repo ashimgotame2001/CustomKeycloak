@@ -18,7 +18,7 @@ public class CustomApiBranchAuthenticatorFactory implements AuthenticatorFactory
     public static final String PROVIDER_ID = "branch-auth";
 
     // Singleton instance
-    private static final Authenticator SINGLETON = new CustomDirectGrantAuthenticator();
+    private static final Authenticator SINGLETON = new CustomDirectGrantAuthenticatorWithBranch();
 
     // Only allow REQUIRED or DISABLED in the flow
     private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {

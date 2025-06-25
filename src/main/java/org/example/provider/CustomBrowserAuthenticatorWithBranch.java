@@ -13,13 +13,13 @@ import org.keycloak.models.UserModel;
 
 import static org.example.exceptions.CustomExcetions.createErrorResponse;
 
-public class CustomBrowserAuthenticator implements Authenticator {
-    private static final Logger logger = Logger.getLogger(CustomBrowserAuthenticator.class);
+public class CustomBrowserAuthenticatorWithBranch implements Authenticator {
+    private static final Logger logger = Logger.getLogger(CustomBrowserAuthenticatorWithBranch.class);
     private static final String LOGIN_FORM = "login"; // Must match the FTL file name in theme
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        logger.info("CustomBrowserAuthenticator: Rendering custom login form...");
+        logger.info("🖼️  [authenticate] Rendering custom login form...");
 
         Response challengeResponse = context.form()
                 .setAttribute("realm", context.getRealm())
@@ -30,25 +30,27 @@ public class CustomBrowserAuthenticator implements Authenticator {
 
     @Override
     public void action(AuthenticationFlowContext context) {
+        logger.info("🚦 [action] Processing login form submission...");
+
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         String username = getValueOrEmpty(formData.getFirst("username"));
         String branch = getValueOrEmpty(formData.getFirst("branch"));
-        logger.info("Login Attempt - Username: " + username + ", Branch: " + branch);
+
+        logger.infof("🔐 Login Attempt - Username: %s | Branch: %s", username, branch);
 
         if (branch.isEmpty()) {
-            String errorMsg = "Missing branch field";
-            logger.warn("[action] Branch field is missing");
+            logger.warn("⚠️  [action] Branch field is missing");
             Response errorResponse = context.form()
-                    .setError(errorMsg)
+                    .setError("Missing branch field")
                     .createForm(LOGIN_FORM + ".ftl");
             context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS, errorResponse);
             return;
         }
-        UserModel user =  context.getSession().users().getUserByUsername(context.getRealm(), username);
-        logger.info("username :"+ user.getEmail());
+
+        UserModel user = context.getSession().users().getUserByUsername(context.getRealm(), username);
 
         if (user == null) {
-            logger.warn("[action] User not set in context");
+            logger.warnf("❌ [action] User [%s] not found in Keycloak", username);
             Response errorResponse = context.form()
                     .setError("User not found")
                     .createForm(LOGIN_FORM + ".ftl");
@@ -56,42 +58,41 @@ public class CustomBrowserAuthenticator implements Authenticator {
             return;
         }
 
-        logger.debugf("[authenticate] Validating branch [%s] against user [%s]", branch, user.getUsername());
+        logger.infof("🔍 Validating branch [%s] for user [%s]", branch, user.getUsername());
         boolean isBranchValid = CustomValidator.validateUserBranch(branch, user);
-        logger.info("Is BranchValid :" + isBranchValid);
+
         if (!isBranchValid) {
             String errorMsg = "Invalid Branch";
             String errorDesc = String.format("Branch validation failed for user [%s]. Provided: %s", user.getUsername(), branch);
-            logger.warn("[authenticate] " + errorMsg);
+            logger.warnf("⚠️  [action] %s", errorDesc);
             Response errorResponse = createErrorResponse(Response.Status.BAD_REQUEST, errorMsg, errorDesc);
             context.failure(AuthenticationFlowError.INVALID_CREDENTIALS, errorResponse);
             return;
         }
 
-        logger.infof("[authenticate] Branch validation passed for user: %s", user.getUsername());
-
+        logger.infof("✅ [action] Branch validation passed for user: %s", user.getUsername());
 
         context.success();
     }
 
     @Override
     public boolean requiresUser() {
-        return false; // Should be false for initial browser login
+        return false; // Initial browser login doesn't need user
     }
 
     @Override
     public boolean configuredFor(KeycloakSession session, RealmModel realm, UserModel user) {
-        return true;
+        return true; // No additional config required
     }
 
     @Override
     public void setRequiredActions(KeycloakSession session, RealmModel realm, UserModel user) {
-        // Not used in browser login flow
+        logger.debug("ℹ️  [setRequiredActions] No required actions needed for user.");
     }
 
     @Override
     public void close() {
-        // No cleanup needed
+        logger.debug("🔚 [close] Cleaning up CustomBrowserAuthenticatorWithBranch.");
     }
 
     private String getValueOrEmpty(String value) {

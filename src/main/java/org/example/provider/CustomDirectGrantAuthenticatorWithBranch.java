@@ -13,9 +13,9 @@ import org.keycloak.models.UserModel;
 
 import static org.example.exceptions.CustomExcetions.createErrorResponse;
 
-public class CustomDirectGrantAuthenticator implements Authenticator {
+public class CustomDirectGrantAuthenticatorWithBranch implements Authenticator {
 
-    private static final Logger logger = Logger.getLogger(CustomDirectGrantAuthenticator.class);
+    private static final Logger logger = Logger.getLogger(CustomDirectGrantAuthenticatorWithBranch.class);
     private static final String BRANCH_ATTRIBUTE = "branch";
 
     @Override

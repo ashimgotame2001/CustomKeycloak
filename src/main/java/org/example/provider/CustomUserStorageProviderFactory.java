@@ -1,7 +1,7 @@
 package org.example.provider;
 
 import org.example.config.DbConnectorConfig;
-import org.example.utils.KeyCloakUtils;
+import org.example.utils.CustomDBUtils;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -32,7 +32,7 @@ public class CustomUserStorageProviderFactory
     @Override
     public CustomUserStorageProvider create(KeycloakSession session, ComponentModel model) {
         DbConnectorConfig dbConfig = new DbConnectorConfig(model);
-        KeyCloakUtils cloakUtils = new KeyCloakUtils(session, dbConfig,model);
+        CustomDBUtils cloakUtils = new CustomDBUtils(session, dbConfig,model);
         return new CustomUserStorageProvider(dbConfig, cloakUtils);
     }
     @Override

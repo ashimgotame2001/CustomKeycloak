@@ -6,7 +6,6 @@ package org.example.config;
  */
 
 import org.example.constants.Constants;
-import org.example.provider.CustomUserStorageProvider;
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 
@@ -27,7 +26,7 @@ public class DbConnectorConfig {
         String user = model.getConfig().getFirst(Constants.DATABASE_USER);
         String password = model.getConfig().getFirst(Constants.DATABASE_PASSWORD);
 
-        logger.infof("Connecting to DB URL: %s with user: %s", url, user);
+        logger.infof("🚀 Initializing  connection pool to: %s", url);
         return DriverManager.getConnection(url, user, password);
     }
 }
